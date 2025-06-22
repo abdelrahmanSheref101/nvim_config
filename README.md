@@ -6,13 +6,15 @@
 * autocompletion 
 	* modular snippets
 * telescope 
-* fuzzy finding
+	* fuzzy finding
+	* ***NOTE:*** make sure that u have [**riggrep**](https://github.com/BurntSushi/ripgrep) installed
 
 
 **comming features:**
 
 * colorschemes
 * auto-closing
+* vimwiki 
 
 **supported languages:**
 
@@ -20,3 +22,5 @@
 * js/ts
 * python
 * c/c++
+
+
