@@ -1,52 +1,81 @@
+-- FILE: lua/plugins/lspconfig.lua
 return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
+    "hrsh7th/cmp-nvim-lsp",
+    "onsails/lspkind.nvim",
   },
   config = function()
-    -- 1) Start Mason
-    require("mason").setup()
+    local lspconfig = require("lspconfig")
+    local mason = require("mason")
+    local mason_lspconfig = require("mason-lspconfig")
 
-    -- 2) Tell Mason‑LSPConfig which servers to install & auto-enable
-    require("mason-lspconfig").setup({
+    local on_attach = function(_, bufnr)
+      require("config.keymaps").setup_lsp_keymaps(bufnr)
+    end
+
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+  
+        vim.diagnostic.config({
+          virtual_text = false,          -- disable inline text
+          signs = true,                  -- keep signs like "E", "W"
+          underline = true,              -- underline the problem
+          update_in_insert = false,      -- don't update while typing
+          severity_sort = true,          -- sort by severity in location list
+        })
+
+
+    mason.setup()
+
+    mason_lspconfig.setup({
       ensure_installed = {
         "lua_ls",
         "pyright",
-        "ts_ls",    -- use ts_ls (v2) instead of tsserver
+        "ts_ls",
         "eslint",
+        "clangd",
       },
-      automatic_installation = true,  -- optional, but ensures servers stay installed
+      automatic_installation = true,
     })
 
-    local lspconfig = require("lspconfig")
-    local keymaps = require("config.keymaps")  -- import helper
-
-    -- 3) Configure each server directly
-    local default_opts = {
-      -- e.g. common capabilities, on_attach, etc.
-      -- capabilities = require("cmp_nvim_lsp").default_capabilities(),
-      -- on_attach = function(client, bufnr) … end,
-    }
-
-    -- Lua
-    lspconfig.lua_ls.setup(vim.tbl_deep_extend("force", default_opts, {
+    lspconfig.lua_ls.setup({
+      on_attach = on_attach,
+      capabilities = capabilities,
       settings = {
         Lua = {
-          diagnostics = { globals = { "vim" } },
+          diagnostics = {
+            globals = { "vim" },
+          },
         },
       },
-    }))
+    })
 
-    -- Python
-    lspconfig.pyright.setup(default_opts)
+    lspconfig.pyright.setup({
+      on_attach = on_attach,
+      capabilities = capabilities,
+    })
 
-    -- TypeScript/JavaScript
-    lspconfig.ts_ls.setup(default_opts)
+    lspconfig.ts_ls.setup({
+      on_attach = on_attach,
+      capabilities = capabilities,
+    })
 
-    -- ESLint (as an LSP)
-    lspconfig.eslint.setup(default_opts)
+    lspconfig.eslint.setup({
+      on_attach = on_attach,
+      capabilities = capabilities,
+    })
+
+    lspconfig.clangd.setup({
+      on_attach = on_attach,
+      capabilities = capabilities,
+      cmd = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=never" },
+      filetypes = { "c", "cpp", "objc", "objcpp" },
+      root_dir = lspconfig.util.root_pattern("compile_commands.json", "compile_flags.txt", ".git"),
+    })
   end,
 }
 
