@@ -16,3 +16,7 @@ require("config.keymaps")
 -- This loads all plugins from lua/plugins/*.lua
 require("lazy").setup({ import = "plugins" })
 
+
+-- to set the colorscheme
+vim.cmd.colorscheme("onedark")
+
