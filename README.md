@@ -1,26 +1,25 @@
-# my nvim config 
-
+# my nvim config
 
 **current supported features:**
 
-* autocompletion 
-	* modular snippets
-* telescope 
-	* fuzzy finding
-	* ***NOTE:*** make sure that u have [**riggrep**](https://github.com/BurntSushi/ripgrep) installed
-* colorschemes
-* status line
+- autocompletion
+  - modular snippets
+- telescope
+  - fuzzy finding
+  - **_NOTE:_** make sure that u have [**riggrep**](https://github.com/BurntSushi/ripgrep) installed
+- colorschemes
+- status line
+- auto-closing
+- vimwiki
 
 **comming features:**
 
-* auto-closing
-* vimwiki 
+- clipboard linking
 
 **supported languages:**
 
-* lua 
-* js/ts
-* python
-* c/c++
-
-
+- lua
+- js/ts
+- python
+- c/c++
+- markdown
