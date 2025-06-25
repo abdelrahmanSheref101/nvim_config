@@ -7,7 +7,7 @@ return {
                 lazy = false,
                 config = function()
                         require("catppuccin").setup({
-                                flavour = "mocha",  -- default flavour; you can change this later
+                                flavour = "mocha", -- default flavour; you can change this later
                         })
                 end,
         },
@@ -33,7 +33,7 @@ return {
                 lazy = false,
                 config = function()
                         require("onedark").setup({
-                                style = "warmer",
+                                style = "warm",
                         })
                 end,
         },
@@ -57,5 +57,10 @@ return {
                         vim.cmd("set background=dark")
                 end,
         },
+        {
+                "folke/tokyonight.nvim",
+                lazy = false,
+                priority = 1000,
+                opts = {},
+        },
 }
-
