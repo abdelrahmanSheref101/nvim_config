@@ -7,8 +7,8 @@ return {
                 "lukas-reineke/cmp-under-comparator",
                 "tzachar/cmp-tabnine",
                 "onsails/lspkind.nvim",
-                -- add path source plugin
                 "hrsh7th/cmp-path",
+                "hrsh7th/cmp-buffer",
         },
         event = "InsertEnter",
         config = function()
@@ -21,14 +21,13 @@ return {
                 local compare = require("cmp.config.compare")
 
                 cmp.setup({
-
                         performance = {
                                 max_view_entries = 10,
                         },
 
                         snippet = {
                                 expand = function(args)
-                                        luasnip.lsp_expand(args.body)
+                                        require("luasnip").lsp_expand(args.body)
                                 end,
                         },
 
@@ -42,40 +41,40 @@ return {
                                 ["<Tab>"] = cmp.mapping(function(fallback)
                                         if cmp.visible() then
                                                 cmp.select_next_item()
-                                        elseif luasnip.expand_or_jumpable() then
-                                                luasnip.expand_or_jump()
                                         else
                                                 fallback()
                                         end
                                 end, { "i", "s" }),
+
                                 ["<S-Tab>"] = cmp.mapping(function(fallback)
                                         if cmp.visible() then
                                                 cmp.select_prev_item()
-                                        elseif luasnip.jumpable(-1) then
-                                                luasnip.jump(-1)
                                         else
                                                 fallback()
                                         end
                                 end, { "i", "s" }),
                         }),
 
-                        formatting = {
-                                format = lspkind.cmp_format({
-                                        mode = "symbol_text",
-                                        maxwidth = 50,
-                                        ellipsis_char = "...",
-                                }),
+                        sources = {
+                                { name = "nvim_lsp" },
+                                { name = "luasnip" },
+                                { name = "cmp_tabnine" },
+                                { name = "buffer" },
+                                { name = "path" },
                         },
-
-                        sources = cmp.config.sources({
-                                { name = "nvim_lsp",    group_index = 1 },
-                                { name = "luasnip",     group_index = 2 },
-                                { name = "cmp_tabnine", group_index = 3 },
-                        }, {
-                                { name = "buffer", group_index = 4, keyword_length = 2 },
-                                -- enable path completion with no minimum chars
-                                { name = "path",   group_index = 5, keyword_length = 0 },
-                        }),
+                        formatting = {
+                                format = function(entry, vim_item)
+                                        -- Deduplicate across sources: let first source win
+                                        vim_item.dup = ({
+                                                nvim_lsp = 0,
+                                                luasnip = 0,
+                                                cmp_tabnine = 0,
+                                                buffer = 0,
+                                                path = 0,
+                                        })[entry.source.name] or 0
+                                        return vim_item
+                                end,
+                        },
 
                         sorting = {
                                 priority_weight = 2,
